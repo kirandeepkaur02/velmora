@@ -1,0 +1,17 @@
+{
+  "name": "velmora",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Velmora — premium natural beauty e-commerce (MERN)",
+  "scripts": {
+    "dev:client": "npm run dev --prefix client",
+    "dev:server": "npm run dev --prefix server",
+    "build:client": "npm run build --prefix client",
+    "lint": "npm run lint --prefix client && npm run lint --prefix server",
+    "format": "prettier --write \"client/src/**/*.{js,jsx,css}\" \"server/src/**/*.js\" \"server/eslint.config.js\"",
+    "format:check": "prettier --check \"client/src/**/*.{js,jsx,css}\" \"server/src/**/*.js\" \"server/eslint.config.js\""
+  },
+  "devDependencies": {
+    "prettier": "^3.9.9"
+  }
+}
