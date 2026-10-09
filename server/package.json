@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
+    "seed": "node scripts/seedCatalog.js",
+    "admin:promote": "node scripts/promoteAdmin.js",
     "lint": "eslint src eslint.config.js",
     "test": "node --test ./tests/**/*.test.js"
   },
@@ -17,12 +19,19 @@
   "description": "Velmora API",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.11.0",
     "cors": "^2.8.6",
     "dotenv": "^18.0.5",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.7.1",
+    "file-type": "^22.1.1",
     "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.10.4"
+    "mongoose": "^9.10.4",
+    "multer": "^2.4.0",
+    "nodemailer": "^10.0.16",
+    "stripe": "^23.0.0",
+    "velmora": "file:.."
   },
   "devDependencies": {
     "eslint": "^10.12.0",

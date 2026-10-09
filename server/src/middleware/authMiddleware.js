@@ -12,7 +12,7 @@ export function signToken(user) {
       role: user.role,
     },
     env.JWT_SECRET,
-    { expiresIn: '7d' },
+    { expiresIn: '15m' },
   );
 }
 
@@ -47,6 +47,13 @@ export const requireAuth = asyncHandler(async (req, res, next) => {
       statusCode: 401,
       code: 'USER_NOT_FOUND',
       message: 'The authenticated user no longer exists.',
+    });
+  }
+  if (user.disabledAt) {
+    throw new ApiError({
+      statusCode: 403,
+      code: 'ACCOUNT_DISABLED',
+      message: 'This account has been disabled.',
     });
   }
 

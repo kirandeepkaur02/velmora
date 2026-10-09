@@ -1,231 +1,235 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+import {
+  AboutPage,
+  BundlesSection,
+  CustomerReviewHighlights,
+  ConcernsPage,
+  ContactPage,
+  FaqPage,
+  HomeRitualAndJournal,
+  IngredientsPage,
+  JournalPage,
+  NewsletterSignup,
+  PaymentReturnPage,
+  PasswordRecoveryPage,
+  RoutinesPage,
+} from './pages/StorefrontPages.jsx';
+import { OrdersPage } from './pages/OrdersPage.jsx';
+import { AdminPage } from './pages/AdminPage.jsx';
+import { ProductReviews } from './pages/ProductReviews.jsx';
 import './App.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-const navItems = ['Home', 'Shop', 'Ingredients', 'Routines', 'Journal', 'About'];
+const navItems = ['Home', 'Shop', 'Ingredients', 'Concerns', 'Routines', 'Journal', 'About', 'FAQ', 'Contact'];
 
-const categories = [
-  { name: 'Cleansers', tone: 'sage' },
-  { name: 'Serums', tone: 'rose' },
-  { name: 'Moisturizers', tone: 'sand' },
-  { name: 'Body care', tone: 'green' },
-];
+const trustFeatures = ['Botanical-inspired care', 'Clear product details', 'Thoughtful daily rituals', 'Considered ingredients'];
 
-const trustFeatures = ['Vegan formulas', 'Cruelty free', 'Clinically gentle', 'Small-batch crafted'];
-
-const reviews = [
-  {
-    name: 'Aisha M.',
-    quote: 'Velmora feels like a ritual — beautiful textures, real results, and ingredients I trust.',
-  },
-  {
-    name: 'Leah R.',
-    quote: 'The glow serum is a permanent part of my routine. It feels premium without being fussy.',
-  },
-  {
-    name: 'Sofia T.',
-    quote: 'Thoughtful packaging, calming scents, and formulas that actually respect sensitive skin.',
-  },
-];
-
-const products = [
-  {
-    id: 1,
-    name: 'Botanical Dew Serum',
-    category: 'Serums',
-    ingredient: 'Niacinamide',
-    concern: 'Glow',
-    skinType: 'All skin types',
-    price: 48,
-    compareAt: 62,
-    rating: 4.9,
-    reviews: 130,
-    stock: 12,
-    isNew: true,
-    badge: 'Bestseller',
-    accent: 'rose',
-    description: 'Weightless hydration and radiance support for a dewy, balanced complexion.',
-    benefits: ['Plumps skin', 'Boosts glow', 'Supports barrier'],
-    ingredients: ['Niacinamide', 'Oat extract', 'Rose water'],
-    format: '30 ml',
-  },
-  {
-    id: 2,
-    name: 'Velvet Oat Cleanser',
-    category: 'Cleansers',
-    ingredient: 'Oat',
-    concern: 'Sensitivity',
-    skinType: 'Dry skin',
-    price: 34,
-    compareAt: 44,
-    rating: 4.8,
-    reviews: 92,
-    stock: 8,
-    isNew: false,
-    badge: 'Gentle',
-    accent: 'sage',
-    description: 'A creamy, low-foam cleanser that comforts and softens without stripping moisture.',
-    benefits: ['Comforts skin', 'Removes buildup', 'Maintains softness'],
-    ingredients: ['Colloidal oat', 'Chamomile', 'Ceramides'],
-    format: '120 ml',
-  },
-  {
-    id: 3,
-    name: 'Rose Clay Mask',
-    category: 'Masks',
-    ingredient: 'Rose clay',
-    concern: 'Detox',
-    skinType: 'Combination skin',
-    price: 42,
-    compareAt: 54,
-    rating: 4.7,
-    reviews: 68,
-    stock: 0,
-    isNew: true,
-    badge: 'New',
-    accent: 'sand',
-    description: 'A purifying clay treatment that lavishes skin with softness after a deep-cleanse ritual.',
-    benefits: ['Absorbs excess oil', 'Smooths texture', 'Refines pores'],
-    ingredients: ['Rose clay', 'Aloe vera', 'Kaolin'],
-    format: '75 g',
-  },
-  {
-    id: 4,
-    name: 'Botanical Barrier Cream',
-    category: 'Moisturizers',
-    ingredient: 'Ceramides',
-    concern: 'Dryness',
-    skinType: 'Sensitive skin',
-    price: 56,
-    compareAt: 68,
-    rating: 5,
-    reviews: 145,
-    stock: 15,
-    isNew: false,
-    badge: 'Best value',
-    accent: 'green',
-    description: 'A cushioning cream that hydrates deeply while reinforcing a resilient skin barrier.',
-    benefits: ['Deep hydration', 'Comforts sensitivity', 'Locks in moisture'],
-    ingredients: ['Ceramides', 'Squalane', 'Calendula'],
-    format: '50 ml',
-  },
-  {
-    id: 5,
-    name: 'Sunlit Essence Mist',
-    category: 'Mist',
-    ingredient: 'Green tea',
-    concern: 'Hydration',
-    skinType: 'All skin types',
-    price: 28,
-    compareAt: 36,
-    rating: 4.6,
-    reviews: 54,
-    stock: 22,
-    isNew: false,
-    badge: 'Refreshing',
-    accent: 'sage',
-    description: 'A soothing facial mist that refreshes and comforts the skin between cleansing and hydration.',
-    benefits: ['Refreshes skin', 'Adds hydration', 'Helps prep layers'],
-    ingredients: ['Green tea', 'Hyaluronic acid', 'Aloe'],
-    format: '80 ml',
-  },
-  {
-    id: 6,
-    name: 'Golden Bloom Oil',
-    category: 'Serums',
-    ingredient: 'Safflower',
-    concern: 'Fine lines',
-    skinType: 'Mature skin',
-    price: 64,
-    compareAt: 78,
-    rating: 4.9,
-    reviews: 118,
-    stock: 6,
-    isNew: true,
-    badge: 'Luxury',
-    accent: 'rose',
-    description: 'A silky facial oil that restores softness and adds a luminous finish with nourishing botanicals.',
-    benefits: ['Smooths texture', 'Adds luminosity', 'Supports hydration'],
-    ingredients: ['Safflower', 'Camellia', 'Vitamin E'],
-    format: '30 ml',
-  },
-  {
-    id: 7,
-    name: 'Moss Renewal Lotion',
-    category: 'Moisturizers',
-    ingredient: 'Moss',
-    concern: 'Dullness',
-    skinType: 'Normal skin',
-    price: 39,
-    compareAt: 50,
-    rating: 4.5,
-    reviews: 47,
-    stock: 10,
-    isNew: false,
-    badge: 'Daily staple',
-    accent: 'green',
-    description: 'A lightweight lotion with botanical extracts to improve suppleness and radiance.',
-    benefits: ['Hydrates', 'Softens texture', 'Boosts radiance'],
-    ingredients: ['Moss extract', 'Peptides', 'Shea butter'],
-    format: '60 ml',
-  },
-  {
-    id: 8,
-    name: 'Citrus Calm Peel',
-    category: 'Treatments',
-    ingredient: 'Lactic acid',
-    concern: 'Texture',
-    skinType: 'Normal to dry skin',
-    price: 52,
-    compareAt: 66,
-    rating: 4.7,
-    reviews: 71,
-    stock: 4,
-    isNew: true,
-    badge: 'Glow ritual',
-    accent: 'sand',
-    description: 'A gentle resurfacing treatment that smooths texture without leaving skin feeling raw.',
-    benefits: ['Refines texture', 'Smooths tone', 'Improves brightness'],
-    ingredients: ['Lactic acid', 'Papaya', 'Hyaluronic acid'],
-    format: '50 ml',
-  },
-];
-
-const ingredientOptions = ['All', 'Niacinamide', 'Oat', 'Rose clay', 'Ceramides', 'Green tea', 'Safflower'];
-const concernOptions = ['All', 'Glow', 'Sensitivity', 'Detox', 'Dryness', 'Hydration', 'Fine lines', 'Texture'];
 const priceOptions = [50, 75, 100];
-const couponCatalog = {
-  VELMORA10: 0.1,
-  SKINCARE15: 0.15,
-  BLOOM20: 0.2,
-};
+let refreshPromise;
+
+async function requestWithAuth(path, options = {}) {
+  const request = (token) =>
+    fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      credentials: 'include',
+      headers: {
+        ...options.headers,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+  let response = await request(localStorage.getItem('velmora_token'));
+  if (response.status !== 401 || path.endsWith('/auth/refresh')) return response;
+
+  refreshPromise ??= fetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
+    method: 'POST',
+    credentials: 'include',
+  })
+    .then(async (refreshResponse) => ({
+      ok: refreshResponse.ok,
+      payload: await refreshResponse.json(),
+    }))
+    .finally(() => {
+      refreshPromise = undefined;
+    });
+  const refreshed = await refreshPromise;
+  if (!refreshed.ok) {
+    localStorage.removeItem('velmora_token');
+    return response;
+  }
+  const refreshPayload = refreshed.payload;
+  if (!refreshPayload.success || !refreshPayload.data.token) {
+    localStorage.removeItem('velmora_token');
+    return response;
+  }
+
+  localStorage.setItem('velmora_token', refreshPayload.data.token);
+  response = await request(refreshPayload.data.token);
+  return response;
+}
 
 function App() {
-  const [view, setView] = useState('home');
+  const [view, setView] = useState(() => {
+    const query = new URLSearchParams(window.location.search);
+    if (query.has('resetToken')) return 'resetPassword';
+    if (query.has('payment')) return 'paymentResult';
+    return 'home';
+  });
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedIngredient, setSelectedIngredient] = useState('All');
   const [selectedConcern, setSelectedConcern] = useState('All');
+  const [selectedSkinType, setSelectedSkinType] = useState('All');
+  const [selectedHairType, setSelectedHairType] = useState('All');
+  const [inStockOnly, setInStockOnly] = useState(false);
   const [minRating, setMinRating] = useState(0);
   const [maxPrice, setMaxPrice] = useState(100);
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('featured');
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedProduct, setSelectedProduct] = useState(products[0]);
-  const [cart, setCart] = useState([
-    { product: products[0], quantity: 1 },
-    { product: products[1], quantity: 1 },
-  ]);
-  const [wishlist, setWishlist] = useState([1, 6]);
+  const [products, setProducts] = useState([]);
+  const [productFacets, setProductFacets] = useState({
+    categories: [],
+    ingredients: [],
+    concerns: [],
+    skinTypes: [],
+    hairTypes: [],
+  });
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState('');
+  const [catalogTotal, setCatalogTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [cart, setCart] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
   const [user, setUser] = useState(null);
   const [authMode, setAuthMode] = useState('login');
   const [authForm, setAuthForm] = useState({ name: '', email: '', password: '' });
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+  const [accountError, setAccountError] = useState('');
+  const [accountMessage, setAccountMessage] = useState('');
+  const [accountLoading, setAccountLoading] = useState(false);
+  const [shoppingError, setShoppingError] = useState('');
+  const [profileForm, setProfileForm] = useState({ name: '', email: '' });
+  const [addressForm, setAddressForm] = useState({
+    fullName: '',
+    phone: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: '',
+    isDefault: false,
+  });
+  const [editingAddressId, setEditingAddressId] = useState('');
   const [couponCode, setCouponCode] = useState('');
-  const [appliedCoupon, setAppliedCoupon] = useState('VELMORA10');
-  const [paymentMethod, setPaymentMethod] = useState('Card');
-  const [orderPlaced, setOrderPlaced] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState('');
+  const [selectedAddressId, setSelectedAddressId] = useState('');
+  const [checkoutQuote, setCheckoutQuote] = useState(null);
+  const [checkoutError, setCheckoutError] = useState('');
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [createdOrder, setCreatedOrder] = useState(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const query = new URLSearchParams({
+      page: String(currentPage),
+      sort: sortBy,
+    });
+    if (selectedCategory !== 'All') query.set('category', selectedCategory);
+    if (selectedIngredient !== 'All') query.set('ingredient', selectedIngredient);
+    if (selectedConcern !== 'All') query.set('concern', selectedConcern);
+    if (selectedSkinType !== 'All') query.set('skinType', selectedSkinType);
+    if (selectedHairType !== 'All') query.set('hairType', selectedHairType);
+    if (inStockOnly) query.set('inStock', 'true');
+    if (minRating > 0) query.set('minRating', String(minRating));
+    if (maxPrice < 100) query.set('maxPrice', String(maxPrice));
+    if (search.trim()) query.set('q', search.trim());
+
+    fetch(`${API_BASE_URL}/api/v1/products?${query}`, { signal: controller.signal })
+      .then(async (response) => {
+        const payload = await response.json();
+        if (!response.ok || !payload.success) {
+          throw new Error(payload.error?.message || 'Could not load products.');
+        }
+        setProducts(payload.data.products);
+        setCatalogTotal(payload.data.pagination.totalItems);
+        setTotalPages(Math.max(1, payload.data.pagination.totalPages));
+        setCatalogError('');
+      })
+      .catch((error) => {
+        if (error.name !== 'AbortError') {
+          setCatalogError(error.message || 'Could not load products.');
+          setProducts([]);
+          setCatalogTotal(0);
+          setTotalPages(1);
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setCatalogLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [
+    currentPage,
+    maxPrice,
+    minRating,
+    search,
+    selectedCategory,
+    selectedConcern,
+    selectedIngredient,
+    selectedSkinType,
+    selectedHairType,
+    inStockOnly,
+    sortBy,
+  ]);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/v1/products/facets`)
+      .then(async (response) => {
+        const payload = await response.json();
+        if (!response.ok || !payload.success) {
+          throw new Error(payload.error?.message || 'Could not load product filters.');
+        }
+        setProductFacets(payload.data);
+      })
+      .catch((error) => setCatalogError(error.message || 'Could not load product filters.'));
+  }, []);
+
+  useEffect(() => {
+    if (view !== 'checkout' || !selectedAddressId) return undefined;
+    const controller = new AbortController();
+    requestWithAuth('/api/v1/checkout/quote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        addressId: selectedAddressId,
+        couponCode: appliedCoupon,
+      }),
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        const payload = await response.json();
+        if (!response.ok || !payload.success) {
+          throw new Error(payload.error?.message || 'Checkout quote could not be calculated.');
+        }
+        setCheckoutQuote(payload.data.quote);
+        setCheckoutError('');
+      })
+      .catch((error) => {
+        if (error.name !== 'AbortError') {
+          setCheckoutQuote(null);
+          setCheckoutError(error.message || 'Checkout quote could not be calculated.');
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setCheckoutLoading(false);
+      });
+    return () => controller.abort();
+  }, [appliedCoupon, selectedAddressId, view]);
 
   useEffect(() => {
     const token = localStorage.getItem('velmora_token');
@@ -233,7 +237,7 @@ function App() {
       return;
     }
 
-    fetch(`${API_BASE_URL}/api/v1/auth/me`, {
+    requestWithAuth('/api/v1/auth/me', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -245,6 +249,10 @@ function App() {
 
         const payload = await response.json();
         setUser(payload.data.user);
+        setProfileForm({ name: payload.data.user.name, email: payload.data.user.email });
+        loadShoppingState().catch((error) =>
+          setShoppingError(error.message || 'Shopping data could not be loaded.'),
+        );
       })
       .catch(() => {
         localStorage.removeItem('velmora_token');
@@ -252,84 +260,164 @@ function App() {
       });
   }, []);
 
-  const isInWishlist = (productId) => wishlist.includes(productId);
+  const isInWishlist = (productId) => wishlist.some((product) => product.id === productId);
 
-  const toggleWishlist = (productId) => {
-    setWishlist((current) =>
-      current.includes(productId)
-        ? current.filter((item) => item !== productId)
-        : [...current, productId],
-    );
-  };
+  async function loadShoppingState() {
+    const [cartResponse, wishlistResponse] = await Promise.all([
+      requestWithAuth('/api/v1/cart'),
+      requestWithAuth('/api/v1/wishlist'),
+    ]);
+    const [cartPayload, wishlistPayload] = await Promise.all([
+      cartResponse.json(),
+      wishlistResponse.json(),
+    ]);
+    if (!cartResponse.ok || !cartPayload.success || !wishlistResponse.ok || !wishlistPayload.success) {
+      throw new Error(
+        cartPayload.error?.message ||
+          wishlistPayload.error?.message ||
+          'Shopping data could not be loaded.',
+      );
+    }
+    setCart(cartPayload.data.cart.items
+      .filter((item) => item.product)
+      .map((item) => ({ product: item.product, quantity: item.quantity, available: item.available })));
+    setWishlist(wishlistPayload.data.products);
+    setShoppingError('');
+  }
 
-  const addToCart = (product) => {
-    setCart((current) => {
-      const existing = current.find((item) => item.product.id === product.id);
-      if (existing) {
-        return current.map((item) =>
-          item.product.id === product.id ? { ...item, quantity: item.quantity + 1 } : item,
-        );
+  const toggleWishlist = async (productId) => {
+    if (!user) {
+      setAuthError('Sign in to save items to your wishlist.');
+      setView('auth');
+      return;
+    }
+    setShoppingError('');
+    try {
+      const saved = wishlist.some((product) => product.id === productId);
+      const response = await requestWithAuth(
+        saved ? `/api/v1/wishlist/${productId}` : '/api/v1/wishlist',
+        {
+          method: saved ? 'DELETE' : 'POST',
+          ...(saved
+            ? {}
+            : {
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId }),
+              }),
+        },
+      );
+      const payload = await response.json();
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.error?.message || 'Wishlist could not be updated.');
       }
-      return [...current, { product, quantity: 1 }];
-    });
+      setWishlist(payload.data.products);
+    } catch (error) {
+      setShoppingError(error.message || 'Wishlist could not be updated.');
+    }
   };
 
-  const updateCartQuantity = (productId, delta) => {
-    setCart((current) =>
-      current
-        .map((item) =>
-          item.product.id === productId
-            ? { ...item, quantity: Math.max(0, item.quantity + delta) }
-            : item,
-        )
-        .filter((item) => item.quantity > 0),
-    );
+  const addToCart = async (product, quantity = selectedQuantity, buyNow = false) => {
+    if (!user) {
+      setAuthError('Sign in to save your cart.');
+      setView('auth');
+      return;
+    }
+    setShoppingError('');
+    try {
+      const response = await requestWithAuth('/api/v1/cart/items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: product.id, quantity }),
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.error?.message || 'The item could not be added to your cart.');
+      }
+      setCart(payload.data.cart.items
+        .filter((item) => item.product)
+        .map((item) => ({ product: item.product, quantity: item.quantity, available: item.available })));
+      if (buyNow) goToCheckout();
+      else setView('cart');
+    } catch (error) {
+      setShoppingError(error.message || 'The item could not be added to your cart.');
+    }
   };
 
-  const removeFromCart = (productId) => {
-    setCart((current) => current.filter((item) => item.product.id !== productId));
+  const addBundleToCart = async (bundle) => {
+    if (!user) {
+      setAuthError('Sign in to add a curated bundle to your cart.');
+      setView('auth');
+      return;
+    }
+    try {
+      const response = await requestWithAuth('/api/v1/cart/bundles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productIds: bundle.products.map((product) => product.id) }),
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.success) throw new Error(payload.error?.message || 'Bundle could not be added to your cart.');
+      setCart(payload.data.cart.items
+        .filter((item) => item.product)
+        .map((item) => ({ product: item.product, quantity: item.quantity, available: item.available })));
+      setShoppingError('');
+      setView('cart');
+    } catch (error) {
+      setShoppingError(error.message || 'Bundle could not be added to your cart.');
+    }
+  };
+
+  const updateCartQuantity = async (productId, delta) => {
+    const item = cart.find((entry) => entry.product.id === productId);
+    if (!item) return;
+    const quantity = item.quantity + delta;
+    if (quantity < 1) {
+      await removeFromCart(productId);
+      return;
+    }
+    setShoppingError('');
+    try {
+      const response = await requestWithAuth(`/api/v1/cart/items/${productId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity }),
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.error?.message || 'Cart quantity could not be updated.');
+      }
+      setCart(payload.data.cart.items
+        .filter((cartItem) => cartItem.product)
+        .map((cartItem) => ({ product: cartItem.product, quantity: cartItem.quantity, available: cartItem.available })));
+    } catch (error) {
+      setShoppingError(error.message || 'Cart quantity could not be updated.');
+    }
+  };
+
+  const removeFromCart = async (productId) => {
+    setShoppingError('');
+    try {
+      const response = await requestWithAuth(`/api/v1/cart/items/${productId}`, {
+        method: 'DELETE',
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.error?.message || 'Cart item could not be removed.');
+      }
+      setCart(payload.data.cart.items
+        .filter((item) => item.product)
+        .map((item) => ({ product: item.product, quantity: item.quantity, available: item.available })));
+    } catch (error) {
+      setShoppingError(error.message || 'Cart item could not be removed.');
+    }
   };
 
   const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  const discount = appliedCoupon ? subtotal * (couponCatalog[appliedCoupon] ?? 0) : 0;
+  const discount = 0;
   const shipping = subtotal > 75 ? 0 : cart.length > 0 ? 9 : 0;
   const total = Math.max(0, subtotal - discount + shipping);
 
-  const filteredProducts = useMemo(() => {
-    const normalized = search.trim().toLowerCase();
-
-    const nextProducts = products.filter((product) => {
-      const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
-      const matchesIngredient = selectedIngredient === 'All' || product.ingredient === selectedIngredient;
-      const matchesConcern = selectedConcern === 'All' || product.concern === selectedConcern;
-      const matchesRating = product.rating >= minRating;
-      const matchesPrice = product.price <= maxPrice;
-      const matchesSearch =
-        !normalized ||
-        product.name.toLowerCase().includes(normalized) ||
-        product.description.toLowerCase().includes(normalized) ||
-        product.ingredients.some((ingredient) => ingredient.toLowerCase().includes(normalized));
-
-      return matchesCategory && matchesIngredient && matchesConcern && matchesRating && matchesPrice && matchesSearch;
-    });
-
-    switch (sortBy) {
-      case 'price-low':
-        return [...nextProducts].sort((a, b) => a.price - b.price);
-      case 'price-high':
-        return [...nextProducts].sort((a, b) => b.price - a.price);
-      case 'rating':
-        return [...nextProducts].sort((a, b) => b.rating - a.rating);
-      case 'newest':
-        return [...nextProducts].sort((a, b) => Number(b.isNew) - Number(a.isNew));
-      default:
-        return [...nextProducts].sort((a, b) => b.rating * b.reviews - a.rating * a.reviews);
-    }
-  }, [selectedCategory, selectedConcern, selectedIngredient, maxPrice, minRating, search, sortBy]);
-
-  const pageSize = 4;
-  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
-  const pagedProducts = filteredProducts.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const pagedProducts = products;
 
   const handleViewChange = (nextView) => {
     setView(nextView);
@@ -339,11 +427,32 @@ function App() {
     setSelectedCategory('All');
     setSelectedIngredient('All');
     setSelectedConcern('All');
+    setSelectedSkinType('All');
+    setSelectedHairType('All');
+    setInStockOnly(false);
     setMinRating(0);
     setMaxPrice(100);
+    setCatalogLoading(true);
     setSearch('');
     setSortBy('featured');
     setCurrentPage(1);
+  };
+
+  const openProduct = async (product) => {
+    setSelectedProduct(product);
+    setSelectedQuantity(1);
+    setSelectedImageIndex(0);
+    setView('detail');
+    if (product.slug || product.id) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/products/${encodeURIComponent(product.slug || product.id)}`);
+        const payload = await response.json();
+        if (!response.ok || !payload.success) throw new Error(payload.error?.message || 'Product details could not be loaded.');
+        setSelectedProduct(payload.data.product);
+      } catch (error) {
+        setCatalogError(error.message || 'Product details could not be loaded.');
+      }
+    }
   };
 
   const handleAuthSubmit = async (event) => {
@@ -365,6 +474,7 @@ function App() {
 
       const response = await fetch(`${API_BASE_URL}/api/v1/auth/${endpoint}`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -378,6 +488,10 @@ function App() {
 
       localStorage.setItem('velmora_token', data.data.token);
       setUser(data.data.user);
+      setProfileForm({ name: data.data.user.name, email: data.data.user.email });
+      loadShoppingState().catch((error) =>
+        setShoppingError(error.message || 'Shopping data could not be loaded.'),
+      );
       setView('account');
       setAuthForm({ name: '', email: '', password: '' });
     } catch (error) {
@@ -387,18 +501,189 @@ function App() {
     }
   };
 
-  const handleApplyCoupon = () => {
-    const normalized = couponCode.trim().toUpperCase();
-    if (couponCatalog[normalized]) {
-      setAppliedCoupon(normalized);
-    } else {
-      setAppliedCoupon('');
+  const handleProfileSubmit = async (event) => {
+    event.preventDefault();
+    setAccountError('');
+    setAccountMessage('');
+    setAccountLoading(true);
+    try {
+      const response = await requestWithAuth('/api/v1/account/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profileForm),
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.error?.message || 'Profile could not be updated.');
+      }
+      setUser(payload.data.user);
+      setAccountMessage('Profile saved.');
+    } catch (error) {
+      setAccountError(error.message || 'Profile could not be updated.');
+    } finally {
+      setAccountLoading(false);
     }
   };
 
-  const handlePlaceOrder = () => {
-    setOrderPlaced(true);
-    setCart([]);
+  const handleAddressSubmit = async (event) => {
+    event.preventDefault();
+    setAccountError('');
+    setAccountMessage('');
+    setAccountLoading(true);
+    try {
+      const method = editingAddressId ? 'PATCH' : 'POST';
+      const endpoint = editingAddressId
+        ? `/api/v1/account/addresses/${editingAddressId}`
+        : '/api/v1/account/addresses';
+      const response = await requestWithAuth(endpoint, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(addressForm),
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.error?.message || 'Address could not be saved.');
+      }
+      const addresses = editingAddressId
+        ? user.addresses.map((address) =>
+            address.id === editingAddressId ? payload.data.address : address,
+          )
+        : [...(user.addresses ?? []), payload.data.address];
+      setUser({ ...user, addresses });
+      setAddressForm({
+        fullName: '',
+        phone: '',
+        addressLine1: '',
+        addressLine2: '',
+        city: '',
+        state: '',
+        postalCode: '',
+        country: '',
+        isDefault: false,
+      });
+      setEditingAddressId('');
+      setAccountMessage('Address saved.');
+    } catch (error) {
+      setAccountError(error.message || 'Address could not be saved.');
+    } finally {
+      setAccountLoading(false);
+    }
+  };
+
+  const handleAddressDelete = async (addressId) => {
+    setAccountError('');
+    setAccountMessage('');
+    try {
+      const response = await requestWithAuth(`/api/v1/account/addresses/${addressId}`, {
+        method: 'DELETE',
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.error?.message || 'Address could not be removed.');
+      }
+      setUser({ ...user, addresses: payload.data.addresses });
+      if (editingAddressId === addressId) setEditingAddressId('');
+      setAccountMessage('Address removed.');
+    } catch (error) {
+      setAccountError(error.message || 'Address could not be removed.');
+    }
+  };
+
+  const handleLogout = async () => {
+    setAccountError('');
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.error?.message || 'Logout failed.');
+      }
+      localStorage.removeItem('velmora_token');
+      setUser(null);
+      setCart([]);
+      setWishlist([]);
+      setView('auth');
+    } catch (error) {
+      setAccountError(error.message || 'Logout failed.');
+    }
+  };
+
+  const handleApplyCoupon = () => {
+    setCheckoutError('');
+    setCheckoutLoading(true);
+    setAppliedCoupon(couponCode.trim().toUpperCase());
+  };
+
+  const handlePlaceOrder = async () => {
+    setCheckoutError('');
+    setCheckoutLoading(true);
+    try {
+      let order = createdOrder;
+      if (!order) {
+        const response = await requestWithAuth('/api/v1/checkout/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            addressId: selectedAddressId,
+            couponCode: appliedCoupon,
+          }),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.success) {
+          throw new Error(payload.error?.message || 'Order could not be prepared.');
+        }
+        order = payload.data.order;
+        setCreatedOrder(order);
+      }
+
+      const paymentResponse = await requestWithAuth(
+        `/api/v1/payments/orders/${order.id}/session`,
+        { method: 'POST' },
+      );
+      const paymentPayload = await paymentResponse.json();
+      if (!paymentResponse.ok || !paymentPayload.success) {
+        throw new Error(paymentPayload.error?.message || 'Stripe checkout could not be started.');
+      }
+      window.location.assign(paymentPayload.data.checkoutUrl);
+    } catch (error) {
+      setCheckoutError(error.message || 'Order could not be prepared.');
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
+
+  const handlePaymentRetry = async (orderId) => {
+    const response = await requestWithAuth(`/api/v1/payments/orders/${orderId}/session`, {
+      method: 'POST',
+    });
+    const payload = await response.json();
+    if (!response.ok || !payload.success) {
+      throw new Error(payload.error?.message || 'Stripe checkout could not be started.');
+    }
+    window.location.assign(payload.data.checkoutUrl);
+  };
+
+  const goToCheckout = () => {
+    if (!user) {
+      setAuthError('Sign in to continue to checkout.');
+      setView('auth');
+      return;
+    }
+    const addresses = user.addresses ?? [];
+    if (addresses.length === 0) {
+      setAccountMessage('Add a shipping address before checkout.');
+      setView('account');
+      return;
+    }
+    setCheckoutError('');
+    setCheckoutQuote(null);
+    setCheckoutLoading(true);
+    setSelectedAddressId(
+      addresses.find((address) => address.isDefault)?.id ?? addresses[0].id,
+    );
+    setView('checkout');
   };
 
   const renderHome = () => (
@@ -422,16 +707,16 @@ function App() {
 
           <div className="hero-metrics">
             <div>
-              <strong>98%</strong>
-              <span>botanical ingredients</span>
+              <strong>Thoughtful</strong>
+              <span>ingredient details</span>
             </div>
             <div>
-              <strong>4.9/5</strong>
-              <span>shop rating</span>
+              <strong>Everyday</strong>
+              <span>beauty rituals</span>
             </div>
             <div>
-              <strong>24h</strong>
-              <span>dispatch</span>
+              <strong>Curated</strong>
+              <span>botanical care</span>
             </div>
           </div>
         </div>
@@ -468,14 +753,49 @@ function App() {
         </div>
 
         <div className="category-grid">
-          {categories.map((category) => (
+          {productFacets.categories.map((name, index) => {
+            const category = { name, tone: ['sage', 'rose', 'sand', 'green'][index % 4] };
+            return (
             <article key={category.name} className={`category-card category-card--${category.tone}`}>
               <div className="category-art" aria-hidden="true" />
               <div className="category-content">
                 <span className="label">Essentials</span>
                 <h3>{category.name}</h3>
+                <button type="button" className="text-button" onClick={() => {
+                  setSelectedCategory(category.name);
+                  setCurrentPage(1);
+                  setView('shop');
+                }}>Shop {category.name}</button>
               </div>
             </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="container section-block">
+        <div className="section-heading">
+          <p className="eyebrow">Find your fit</p>
+          <h2>Shop by ingredient or concern.</h2>
+        </div>
+        <h3>Ingredients</h3>
+        <div className="ingredient-pills">
+          {productFacets.ingredients.slice(0, 8).map((ingredient) => (
+            <button type="button" className="ingredient-pill" key={ingredient} onClick={() => {
+              setSelectedIngredient(ingredient);
+              setCurrentPage(1);
+              setView('shop');
+            }}>{ingredient}</button>
+          ))}
+        </div>
+        <h3>Concerns</h3>
+        <div className="ingredient-pills">
+          {productFacets.concerns.slice(0, 8).map((concern) => (
+            <button type="button" className="ingredient-pill" key={concern} onClick={() => {
+              setSelectedConcern(concern);
+              setCurrentPage(1);
+              setView('shop');
+            }}>{concern}</button>
           ))}
         </div>
       </section>
@@ -494,7 +814,9 @@ function App() {
         <div className="product-grid">
           {products.slice(0, 4).map((product) => (
             <article key={product.id} className="product-card">
-              <div className={`product-image product-image--${product.accent}`} aria-hidden="true" />
+              <div className={`product-image product-image--${product.accent}`}>
+                {product.images?.[0]?.url && <img src={product.images[0].url} alt={product.name} loading="lazy" />}
+              </div>
               <div className="product-card-body">
                 <span className="label">{product.badge}</span>
                 <h3>{product.name}</h3>
@@ -502,7 +824,7 @@ function App() {
                   <strong>${product.price}</strong>
                   <span>${product.compareAt}</span>
                 </div>
-                <button type="button" className="button button-primary full-width" onClick={() => { setSelectedProduct(product); setView('detail'); }}>
+                <button type="button" className="button button-primary full-width" onClick={() => openProduct(product)}>
                   View details
                 </button>
               </div>
@@ -510,6 +832,41 @@ function App() {
           ))}
         </div>
       </section>
+
+      {products.some((product) => product.isNew) && (
+        <section className="container section-block">
+          <div className="section-heading">
+            <p className="eyebrow">Just arrived</p>
+            <h2>Meet the newest additions.</h2>
+          </div>
+          <div className="product-grid">
+            {products.filter((product) => product.isNew).slice(0, 4).map((product) => (
+              <article className="product-card" key={product.id}>
+                <div className={`product-image product-image--${product.accent}`}>
+                  {product.images?.[0]?.url && <img src={product.images[0].url} alt={product.name} loading="lazy" />}
+                </div>
+                <div className="product-card-body">
+                  <span className="label">New arrival</span>
+                  <h3>{product.name}</h3>
+                  <strong>${product.price}</strong>
+                  <button type="button" className="button button-primary full-width" onClick={() => openProduct(product)}>View details</button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <BundlesSection
+        onProduct={openProduct}
+        onShop={() => handleViewChange('shop')}
+        onAddBundle={addBundleToCart}
+      />
+      <HomeRitualAndJournal
+        onProduct={openProduct}
+        onShop={() => handleViewChange('shop')}
+        onJournal={() => handleViewChange('journal')}
+      />
 
       <section className="story-panel">
         <div className="container story-layout">
@@ -526,7 +883,7 @@ function App() {
               </div>
               <div>
                 <strong>Thoughtful formulas</strong>
-                <span>Free from unnecessary irritants.</span>
+                <span>Clear information to support considered choices.</span>
               </div>
             </div>
           </div>
@@ -536,33 +893,14 @@ function App() {
         </div>
       </section>
 
-      <section className="container section-block">
-        <div className="section-heading">
-          <p className="eyebrow">Customer love</p>
-          <h2>Real routines, real results.</h2>
-        </div>
-
-        <div className="review-grid">
-          {reviews.map((review) => (
-            <article key={review.name} className="review-card">
-              <div className="stars" aria-label="Five star review">
-                ★★★★★
-              </div>
-              <p>“{review.quote}”</p>
-              <strong>{review.name}</strong>
-            </article>
-          ))}
-        </div>
-      </section>
+      <CustomerReviewHighlights />
 
       <section className="container section-block newsletter-box">
         <div>
           <p className="eyebrow">Stay in bloom</p>
           <h2>Receive rituals, tips, and early access.</h2>
         </div>
-        <button type="button" className="button button-primary">
-          Join the newsletter
-        </button>
+        <NewsletterSignup />
       </section>
     </>
   );
@@ -574,21 +912,21 @@ function App() {
           <p className="eyebrow">Shop the collection</p>
           <h2>Premium natural essentials.</h2>
         </div>
-        <div className="shop-results-meta">{filteredProducts.length} products</div>
+        <div className="shop-results-meta">{catalogTotal} products</div>
       </div>
 
       <div className="shop-layout">
         <aside className="shop-sidebar">
           <div className="filter-block">
             <label htmlFor="search">Search</label>
-            <input id="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search products" />
+            <input id="search" value={search} onChange={(event) => { setCatalogLoading(true); setCurrentPage(1); setSearch(event.target.value); }} placeholder="Search products" />
           </div>
 
           <div className="filter-block">
             <label htmlFor="category">Category</label>
-            <select id="category" value={selectedCategory} onChange={(event) => setSelectedCategory(event.target.value)}>
+            <select id="category" value={selectedCategory} onChange={(event) => { setCatalogLoading(true); setCurrentPage(1); setSelectedCategory(event.target.value); }}>
               <option value="All">All categories</option>
-              {['Cleansers', 'Serums', 'Moisturizers', 'Masks', 'Mist', 'Treatments'].map((category) => (
+              {productFacets.categories.map((category) => (
                 <option key={category} value={category}>{category}</option>
               ))}
             </select>
@@ -596,8 +934,8 @@ function App() {
 
           <div className="filter-block">
             <label htmlFor="ingredient">Ingredient</label>
-            <select id="ingredient" value={selectedIngredient} onChange={(event) => setSelectedIngredient(event.target.value)}>
-              {ingredientOptions.map((ingredient) => (
+            <select id="ingredient" value={selectedIngredient} onChange={(event) => { setCatalogLoading(true); setCurrentPage(1); setSelectedIngredient(event.target.value); }}>
+              {['All', ...productFacets.ingredients].map((ingredient) => (
                 <option key={ingredient} value={ingredient}>{ingredient === 'All' ? 'Any ingredient' : ingredient}</option>
               ))}
             </select>
@@ -605,16 +943,41 @@ function App() {
 
           <div className="filter-block">
             <label htmlFor="concern">Concern</label>
-            <select id="concern" value={selectedConcern} onChange={(event) => setSelectedConcern(event.target.value)}>
-              {concernOptions.map((concern) => (
+            <select id="concern" value={selectedConcern} onChange={(event) => { setCatalogLoading(true); setCurrentPage(1); setSelectedConcern(event.target.value); }}>
+              {['All', ...productFacets.concerns].map((concern) => (
                 <option key={concern} value={concern}>{concern === 'All' ? 'Any concern' : concern}</option>
               ))}
             </select>
           </div>
 
           <div className="filter-block">
+            <label htmlFor="skinType">Skin type</label>
+            <select id="skinType" value={selectedSkinType} onChange={(event) => { setCatalogLoading(true); setCurrentPage(1); setSelectedSkinType(event.target.value); }}>
+              <option value="All">All skin types</option>
+              {productFacets.skinTypes.map((skinType) => <option key={skinType} value={skinType}>{skinType}</option>)}
+            </select>
+          </div>
+
+          {productFacets.hairTypes.length > 0 && (
+            <div className="filter-block">
+              <label htmlFor="hairType">Hair type</label>
+              <select id="hairType" value={selectedHairType} onChange={(event) => { setCatalogLoading(true); setCurrentPage(1); setSelectedHairType(event.target.value); }}>
+                <option value="All">All hair types</option>
+                {productFacets.hairTypes.map((hairType) => <option key={hairType} value={hairType}>{hairType}</option>)}
+              </select>
+            </div>
+          )}
+
+          <div className="filter-block">
+            <label className="checkbox-label" htmlFor="inStock">
+              <input id="inStock" type="checkbox" checked={inStockOnly} onChange={(event) => { setCatalogLoading(true); setCurrentPage(1); setInStockOnly(event.target.checked); }} />
+              In-stock products only
+            </label>
+          </div>
+
+          <div className="filter-block">
             <label htmlFor="rating">Minimum rating</label>
-            <select id="rating" value={minRating} onChange={(event) => setMinRating(Number(event.target.value))}>
+            <select id="rating" value={minRating} onChange={(event) => { setCatalogLoading(true); setCurrentPage(1); setMinRating(Number(event.target.value)); }}>
               <option value={0}>Any rating</option>
               <option value={4.5}>4.5+</option>
               <option value={4.7}>4.7+</option>
@@ -624,7 +987,7 @@ function App() {
 
           <div className="filter-block">
             <label htmlFor="price">Max price</label>
-            <select id="price" value={maxPrice} onChange={(event) => setMaxPrice(Number(event.target.value))}>
+            <select id="price" value={maxPrice} onChange={(event) => { setCatalogLoading(true); setCurrentPage(1); setMaxPrice(Number(event.target.value)); }}>
               {priceOptions.map((price) => (
                 <option key={price} value={price}>Up to ${price}</option>
               ))}
@@ -641,7 +1004,7 @@ function App() {
           <div className="shop-toolbar">
             <div className="toolbar-sort">
               <label htmlFor="sortBy">Sort by</label>
-              <select id="sortBy" value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
+              <select id="sortBy" value={sortBy} onChange={(event) => { setCatalogLoading(true); setCurrentPage(1); setSortBy(event.target.value); }}>
                 <option value="featured">Featured</option>
                 <option value="newest">Newest</option>
                 <option value="price-low">Price: low to high</option>
@@ -651,11 +1014,15 @@ function App() {
             </div>
           </div>
 
+          {catalogLoading && <p role="status">Loading products...</p>}
+          {catalogError && <p className="auth-error" role="alert">{catalogError}</p>}
           <div className="product-grid product-grid--catalog">
             {pagedProducts.length > 0 ? (
               pagedProducts.map((product) => (
                 <article key={product.id} className="product-card">
-                  <div className={`product-image product-image--${product.accent}`} aria-hidden="true" />
+                  <div className={`product-image product-image--${product.accent}`}>
+                    {product.images?.[0]?.url && <img src={product.images[0].url} alt={product.name} loading="lazy" />}
+                  </div>
                   <div className="product-card-body">
                     <span className="label">{product.badge}</span>
                     <h3>{product.name}</h3>
@@ -667,7 +1034,7 @@ function App() {
                       <strong>${product.price}</strong>
                       <span>${product.compareAt}</span>
                     </div>
-                    <button type="button" className="button button-primary full-width" onClick={() => { setSelectedProduct(product); setView('detail'); }}>
+                    <button type="button" className="button button-primary full-width" onClick={() => openProduct(product)}>
                       {product.stock > 0 ? 'View details' : 'Sold out'}
                     </button>
                   </div>
@@ -684,15 +1051,15 @@ function App() {
             )}
           </div>
 
-          {filteredProducts.length > 0 && (
+          {catalogTotal > 0 && (
             <div className="pagination">
-              <button type="button" className="button button-secondary" disabled={currentPage === 1} onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}>
+              <button type="button" className="button button-secondary" disabled={currentPage === 1} onClick={() => { setCatalogLoading(true); setCurrentPage((page) => Math.max(1, page - 1)); }}>
                 Previous
               </button>
               <span>
                 Page {currentPage} of {totalPages}
               </span>
-              <button type="button" className="button button-secondary" disabled={currentPage === totalPages} onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}>
+              <button type="button" className="button button-secondary" disabled={currentPage === totalPages} onClick={() => { setCatalogLoading(true); setCurrentPage((page) => Math.min(totalPages, page + 1)); }}>
                 Next
               </button>
             </div>
@@ -707,16 +1074,31 @@ function App() {
       <button type="button" className="text-button" onClick={() => handleViewChange('shop')}>
         ← Back to shop
       </button>
+      {shoppingError && <p className="auth-error" role="alert">{shoppingError}</p>}
 
       {selectedProduct && (
         <div className="detail-layout">
           <div className="detail-gallery">
-            <div className={`detail-view detail-view--${selectedProduct.accent}`} aria-hidden="true" />
-            <div className="detail-thumbs">
-              <div className={`detail-thumb detail-thumb--${selectedProduct.accent}`} />
-              <div className={`detail-thumb detail-thumb--${selectedProduct.accent} detail-thumb--soft`} />
-              <div className={`detail-thumb detail-thumb--${selectedProduct.accent} detail-thumb--muted`} />
+            <div className={`detail-view detail-view--${selectedProduct.accent}`}>
+              {selectedProduct.images?.[selectedImageIndex]?.url && (
+                <img src={selectedProduct.images[selectedImageIndex].url} alt={selectedProduct.name} />
+              )}
             </div>
+            {selectedProduct.images?.length > 1 && (
+              <div className="detail-thumbs">
+                {selectedProduct.images.map((image, index) => (
+                  <button
+                    type="button"
+                    className={`detail-thumb ${selectedImageIndex === index ? 'detail-thumb--selected' : ''}`}
+                    key={image.publicId}
+                    onClick={() => setSelectedImageIndex(index)}
+                    aria-label={`View ${selectedProduct.name} image ${index + 1}`}
+                  >
+                    <img src={image.url} alt="" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="detail-content">
@@ -734,8 +1116,25 @@ function App() {
             </div>
 
             <div className="detail-actions">
-              <button type="button" className="button button-primary" onClick={() => addToCart(selectedProduct)}>
+              <label className="quantity-control">
+                Quantity
+                <input
+                  type="number"
+                  min="1"
+                  max={selectedProduct.stock}
+                  value={selectedQuantity}
+                  disabled={selectedProduct.stock < 1}
+                  onChange={(event) => setSelectedQuantity(Math.min(
+                    selectedProduct.stock,
+                    Math.max(1, Number(event.target.value) || 1),
+                  ))}
+                />
+              </label>
+              <button type="button" className="button button-primary" disabled={selectedProduct.stock < 1} onClick={() => addToCart(selectedProduct)}>
                 Add to cart
+              </button>
+              <button type="button" className="button button-secondary" disabled={selectedProduct.stock < 1} onClick={() => addToCart(selectedProduct, selectedQuantity, true)}>
+                Buy now
               </button>
               <button type="button" className="button button-secondary" onClick={() => toggleWishlist(selectedProduct.id)}>
                 {isInWishlist(selectedProduct.id) ? 'Saved' : 'Save for later'}
@@ -747,6 +1146,12 @@ function App() {
                 <span>Skin type</span>
                 <strong>{selectedProduct.skinType}</strong>
               </div>
+              {selectedProduct.hairType && (
+                <div>
+                  <span>Hair type</span>
+                  <strong>{selectedProduct.hairType}</strong>
+                </div>
+              )}
               <div>
                 <span>Format</span>
                 <strong>{selectedProduct.format}</strong>
@@ -774,6 +1179,52 @@ function App() {
                 ))}
               </div>
             </div>
+            {selectedProduct.howToUse && (
+              <div className="detail-section">
+                <h3>How to use</h3>
+                <p>{selectedProduct.howToUse}</p>
+              </div>
+            )}
+            <div className="detail-section">
+              <h3>Shipping</h3>
+              <p>Shipping costs and delivery details are confirmed before you pay at checkout. Free standard shipping applies above the configured order threshold.</p>
+            </div>
+            {products.filter((product) => product.id !== selectedProduct.id && product.category === selectedProduct.category).length > 0 && (
+              <div className="detail-section">
+                <h3>You may also like</h3>
+                <div className="ingredient-pills">
+                  {products
+                    .filter((product) => product.id !== selectedProduct.id && product.category === selectedProduct.category)
+                    .slice(0, 4)
+                    .map((product) => (
+                      <button className="ingredient-pill" type="button" key={product.id} onClick={() => openProduct(product)}>
+                        {product.name}
+                      </button>
+                    ))}
+                </div>
+              </div>
+            )}
+
+            {selectedProduct.frequentlyBoughtTogether?.length > 0 && (
+              <section className="detail-section">
+                <h3>Frequently bought together</h3>
+                <div className="review-grid">
+                  {selectedProduct.frequentlyBoughtTogether.map((product) => (
+                    <article className="review-card" key={product.id}>
+                      {product.images?.[0]?.url && <img src={product.images[0].url} alt={product.name} loading="lazy" />}
+                      <h4>{product.name}</h4>
+                      <p>${product.price} · {product.rating} ★</p>
+                      <button type="button" className="button button-secondary" onClick={() => openProduct(product)}>View product</button>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            )}
+            <ProductReviews
+              productId={selectedProduct.id}
+              user={user}
+              requestWithAuth={requestWithAuth}
+            />
           </div>
         </div>
       )}
@@ -815,6 +1266,11 @@ function App() {
           <button type="submit" className="button button-primary auth-submit" disabled={authLoading}>
             {authLoading ? 'Please wait...' : authMode === 'login' ? 'Sign in' : 'Create account'}
           </button>
+          {authMode === 'login' && (
+            <button type="button" className="text-button" onClick={() => setView('forgotPassword')}>
+              Forgot password?
+            </button>
+          )}
         </form>
       </div>
     </section>
@@ -827,35 +1283,103 @@ function App() {
           <p className="eyebrow">My account</p>
           <h2>Hello, {user?.name || 'Velmora customer'}.</h2>
         </div>
-        <button type="button" className="button button-secondary" onClick={() => {
-          localStorage.removeItem('velmora_token');
-          setUser(null);
-          setView('auth');
-        }}>
+        <button type="button" className="button button-secondary" onClick={handleLogout}>
           Logout
         </button>
       </div>
 
+      {accountError && <p className="auth-error" role="alert">{accountError}</p>}
+      {accountMessage && <p role="status">{accountMessage}</p>}
+
       <div className="account-grid">
         <div className="account-panel">
           <h3>Profile</h3>
-          <p>{user?.email}</p>
-          <p>Member since Jan 2026</p>
+          <form className="auth-form" onSubmit={handleProfileSubmit}>
+            <label>Name<input value={profileForm.name} maxLength="100" onChange={(event) => setProfileForm({ ...profileForm, name: event.target.value })} required /></label>
+            <label>Email<input type="email" value={profileForm.email} maxLength="254" onChange={(event) => setProfileForm({ ...profileForm, email: event.target.value })} required /></label>
+            <button className="button button-primary" type="submit" disabled={accountLoading}>Save profile</button>
+          </form>
         </div>
 
         <div className="account-panel">
           <h3>Addresses</h3>
-          <p>12 Willow Road</p>
-          <p>Fitzroy, Victoria</p>
+          {(user?.addresses ?? []).map((address) => (
+            <article className="review-card" key={address.id}>
+              <strong>{address.fullName}{address.isDefault ? ' · Default' : ''}</strong>
+              <p>{address.addressLine1}{address.addressLine2 ? `, ${address.addressLine2}` : ''}</p>
+              <p>{address.city}, {address.state} {address.postalCode}, {address.country}</p>
+              <p>{address.phone}</p>
+              <button type="button" className="text-button" onClick={() => {
+                setEditingAddressId(address.id);
+                setAddressForm({
+                  fullName: address.fullName,
+                  phone: address.phone,
+                  addressLine1: address.addressLine1,
+                  addressLine2: address.addressLine2 ?? '',
+                  city: address.city,
+                  state: address.state,
+                  postalCode: address.postalCode,
+                  country: address.country,
+                  isDefault: address.isDefault,
+                });
+              }}>Edit</button>
+              <button type="button" className="text-button" onClick={() => handleAddressDelete(address.id)}>Remove</button>
+            </article>
+          ))}
+          <form className="auth-form" onSubmit={handleAddressSubmit}>
+            <h4>{editingAddressId ? 'Edit address' : 'Add an address'}</h4>
+            {[
+              ['fullName', 'Full name'],
+              ['phone', 'Phone'],
+              ['addressLine1', 'Address line 1'],
+              ['addressLine2', 'Address line 2'],
+              ['city', 'City'],
+              ['state', 'State / Province'],
+              ['postalCode', 'Postal code'],
+              ['country', 'Country'],
+            ].map(([field, label]) => (
+              <label key={field}>{label}
+                <input
+                  value={addressForm[field]}
+                  maxLength={field === 'addressLine1' || field === 'addressLine2' ? 200 : 100}
+                  onChange={(event) => setAddressForm({ ...addressForm, [field]: event.target.value })}
+                  required={field !== 'addressLine2'}
+                />
+              </label>
+            ))}
+            <label className="checkbox-label">
+              <input type="checkbox" checked={addressForm.isDefault} onChange={(event) => setAddressForm({ ...addressForm, isDefault: event.target.checked })} />
+              Set as default address
+            </label>
+            <button className="button button-primary" type="submit" disabled={accountLoading}>{editingAddressId ? 'Save address' : 'Add address'}</button>
+            {editingAddressId && <button className="button button-secondary" type="button" onClick={() => {
+              setEditingAddressId('');
+              setAddressForm({
+                fullName: '', phone: '', addressLine1: '', addressLine2: '',
+                city: '', state: '', postalCode: '', country: '', isDefault: false,
+              });
+            }}>Cancel edit</button>}
+          </form>
         </div>
 
         <div className="account-panel">
           <h3>Wishlist</h3>
           <ul>
-            {products.filter((product) => wishlist.includes(product.id)).map((product) => (
-              <li key={product.id}>{product.name}</li>
+            {wishlist.map((product) => (
+              <li key={product.id} className="wishlist-item">
+                <button type="button" className="text-button" onClick={() => openProduct(product)}>{product.name}</button>
+                <button type="button" className="text-button" onClick={() => toggleWishlist(product.id)}>Remove</button>
+              </li>
             ))}
           </ul>
+          <button type="button" className="button button-secondary" onClick={() => setView('orders')}>
+            View orders
+          </button>
+          {user?.role === 'admin' && (
+            <button type="button" className="button button-primary" onClick={() => setView('admin')}>
+              Admin dashboard
+            </button>
+          )}
         </div>
       </div>
     </section>
@@ -867,6 +1391,7 @@ function App() {
         <p className="eyebrow">Your cart</p>
         <h2>{cart.length} items selected.</h2>
       </div>
+      {shoppingError && <p className="auth-error" role="alert">{shoppingError}</p>}
 
       {cart.length === 0 ? (
         <div className="empty-state cart-empty">
@@ -878,17 +1403,19 @@ function App() {
       ) : (
         <div className="cart-layout">
           <div className="cart-items">
-            {cart.map(({ product, quantity }) => (
+            {cart.map(({ product, quantity, available }) => (
               <div key={product.id} className="cart-item">
-                <div className={`mini-product mini-product--${product.accent}`} aria-hidden="true" />
+                <div className={`mini-product mini-product--${product.accent}`}>
+                  {product.images?.[0]?.url && <img src={product.images[0].url} alt="" />}
+                </div>
                 <div className="cart-item-copy">
                   <h3>{product.name}</h3>
-                  <p>{product.category}</p>
+                  <p>{product.category}{available ? '' : ' · No longer available in this quantity'}</p>
                 </div>
                 <div className="quantity-stepper">
                   <button type="button" onClick={() => updateCartQuantity(product.id, -1)}>-</button>
                   <span>{quantity}</span>
-                  <button type="button" onClick={() => updateCartQuantity(product.id, 1)}>+</button>
+                  <button type="button" onClick={() => updateCartQuantity(product.id, 1)} disabled={quantity >= product.stock}>+</button>
                 </div>
                 <strong>${product.price * quantity}</strong>
                 <button type="button" className="remove-button" onClick={() => removeFromCart(product.id)}>
@@ -916,7 +1443,7 @@ function App() {
               <span>Total</span>
               <strong>${total.toFixed(2)}</strong>
             </div>
-            <button type="button" className="button button-primary full-width" onClick={() => setView('checkout')}>
+            <button type="button" className="button button-primary full-width" disabled={cart.some((item) => !item.available)} onClick={goToCheckout}>
               Proceed to checkout
             </button>
           </aside>
@@ -929,96 +1456,93 @@ function App() {
     <section className="container checkout-page">
       <div className="section-heading">
         <p className="eyebrow">Checkout</p>
-        <h2>Secure payment.</h2>
+        <h2>Review your order.</h2>
       </div>
 
-      {orderPlaced ? (
-        <div className="confirm-box">
-          <h3>Order confirmed!</h3>
-          <p>Your Velmora ritual is on the way. Order #VM-2048 has been placed successfully.</p>
-          <button type="button" className="button button-primary" onClick={() => setView('home')}>
-            Back to home
-          </button>
-        </div>
-      ) : (
-        <div className="checkout-layout">
+      <div className="checkout-layout">
           <div className="checkout-panel">
             <h3>Shipping</h3>
             <div className="checkout-form">
               <label>
-                Full name
-                <input defaultValue={user?.name || 'Ava Jordan'} />
-              </label>
-              <label>
-                Email
-                <input defaultValue={user?.email || 'ava@velmora.com'} />
-              </label>
-              <label>
-                Address
-                <input defaultValue="12 Willow Road, Fitzroy" />
+                Ship to
+                <select value={selectedAddressId} disabled={Boolean(createdOrder)} onChange={(event) => {
+                  setCheckoutLoading(true);
+                  setSelectedAddressId(event.target.value);
+                }}>
+                  {(user?.addresses ?? []).map((address) => (
+                    <option value={address.id} key={address.id}>
+                      {address.fullName} · {address.addressLine1}, {address.city}
+                    </option>
+                  ))}
+                </select>
               </label>
             </div>
-
-            <h3>Payment method</h3>
-            <div className="payment-options">
-              {['Card', 'Apple Pay', 'PayPal'].map((method) => (
-                <button key={method} type="button" className={paymentMethod === method ? 'payment-option active' : 'payment-option'} onClick={() => setPaymentMethod(method)}>
-                  {method}
-                </button>
-              ))}
-            </div>
+            {!user?.addresses?.length && (
+              <p>No saved shipping address. Add one in your account before checkout.</p>
+            )}
 
             <div className="coupon-box">
               <label htmlFor="coupon">Coupon code</label>
               <div className="coupon-row">
-                <input id="coupon" value={couponCode} onChange={(event) => setCouponCode(event.target.value)} placeholder="VELMORA10" />
-                <button type="button" className="button button-secondary" onClick={handleApplyCoupon}>
+                <input id="coupon" value={couponCode} disabled={Boolean(createdOrder)} onChange={(event) => setCouponCode(event.target.value)} placeholder="VELMORA10" />
+                <button type="button" className="button button-secondary" disabled={Boolean(createdOrder)} onClick={handleApplyCoupon}>
                   Apply
                 </button>
               </div>
               <span className="coupon-status">
-                {appliedCoupon ? `Applied: ${appliedCoupon}` : 'No valid coupon applied'}
+                {checkoutQuote?.couponCode ? `Applied: ${checkoutQuote.couponCode}` : 'No coupon applied'}
               </span>
             </div>
+            {checkoutError && <p className="auth-error" role="alert">{checkoutError}</p>}
+            {checkoutLoading && <p role="status">Recalculating totals…</p>}
           </div>
 
           <aside className="summary-box">
             <h3>Order summary</h3>
-            {cart.map(({ product, quantity }) => (
-              <div key={product.id} className="summary-line">
+            {(createdOrder?.items ?? checkoutQuote?.items ?? []).map((item) => (
+              <div key={item.productId} className="summary-line">
                 <span>
-                  {product.name} × {quantity}
+                  {item.name} × {item.quantity}
                 </span>
-                <strong>${product.price * quantity}</strong>
+                <strong>{createdOrder?.currency ?? checkoutQuote?.currency ?? 'USD'} {(item.lineTotal ?? item.unitPrice * item.quantity).toFixed(2)}</strong>
               </div>
             ))}
             <div className="summary-row">
               <span>Subtotal</span>
-              <strong>${subtotal}</strong>
+              <strong>{createdOrder?.currency ?? checkoutQuote?.currency ?? 'USD'} {(createdOrder?.subtotal ?? checkoutQuote?.subtotal ?? 0).toFixed(2)}</strong>
             </div>
             <div className="summary-row">
               <span>Shipping</span>
-              <strong>{shipping === 0 ? 'Free' : `$${shipping}`}</strong>
+              <strong>{createdOrder?.currency ?? checkoutQuote?.currency ?? 'USD'} {(createdOrder?.shipping ?? checkoutQuote?.shipping ?? 0).toFixed(2)}</strong>
             </div>
             <div className="summary-row">
               <span>Discount</span>
-              <strong>- ${discount.toFixed(2)}</strong>
+              <strong>- {createdOrder?.currency ?? checkoutQuote?.currency ?? 'USD'} {(createdOrder?.discount ?? checkoutQuote?.discount ?? 0).toFixed(2)}</strong>
+            </div>
+            <div className="summary-row">
+              <span>Tax</span>
+              <strong>{createdOrder?.currency ?? checkoutQuote?.currency ?? 'USD'} {(createdOrder?.tax ?? checkoutQuote?.tax ?? 0).toFixed(2)}</strong>
             </div>
             <div className="summary-total">
               <span>Total</span>
-              <strong>${total.toFixed(2)}</strong>
+              <strong>{createdOrder?.currency ?? checkoutQuote?.currency ?? 'USD'} {(createdOrder?.total ?? checkoutQuote?.total ?? 0).toFixed(2)}</strong>
             </div>
-            <button type="button" className="button button-primary full-width" onClick={handlePlaceOrder}>
-              Pay with {paymentMethod}
+            <button
+              type="button"
+              className="button button-primary full-width"
+              disabled={!checkoutQuote || checkoutLoading || !selectedAddressId}
+              onClick={handlePlaceOrder}
+            >
+              {checkoutLoading ? 'Please wait...' : createdOrder ? 'Retry secure payment' : 'Pay securely with Stripe'}
             </button>
           </aside>
-        </div>
-      )}
+      </div>
     </section>
   );
 
   return (
     <div className="page-shell">
+      <a className="skip-link" href="#main-content">Skip to main content</a>
       <div className="announcement-bar">
         <div className="container announcement-inner">Free shipping on orders over $75 • New ritual collection is live</div>
       </div>
@@ -1034,7 +1558,7 @@ function App() {
 
           <nav className="main-nav" aria-label="Main navigation">
             {navItems.map((item) => (
-              <button key={item} type="button" className="nav-link-button" onClick={() => handleViewChange(item === 'Home' ? 'home' : item === 'Shop' ? 'shop' : 'home')}>
+              <button key={item} type="button" className="nav-link-button" onClick={() => handleViewChange(item.toLowerCase())}>
                 {item}
               </button>
             ))}
@@ -1051,12 +1575,48 @@ function App() {
         </div>
       </header>
 
-      <main>
+      <main id="main-content">
         {view === 'home' && renderHome()}
         {view === 'shop' && renderShop()}
         {view === 'detail' && renderDetail()}
+        {view === 'ingredients' && <IngredientsPage ingredients={productFacets.ingredients} onSelect={(ingredient) => { setSelectedIngredient(ingredient); setCurrentPage(1); setView('shop'); }} />}
+        {view === 'concerns' && <ConcernsPage
+          concerns={productFacets.concerns}
+          skinTypes={productFacets.skinTypes}
+          hairTypes={productFacets.hairTypes}
+          onFind={({ concern, skinType, hairType, inStock }) => {
+            setSelectedConcern(concern);
+            setSelectedSkinType(skinType);
+            setSelectedHairType(hairType);
+            setInStockOnly(inStock);
+            setCurrentPage(1);
+            setView('shop');
+          }}
+        />}
+        {view === 'routines' && <RoutinesPage onShop={() => setView('shop')} onProduct={openProduct} />}
+        {view === 'journal' && <JournalPage />}
+        {view === 'about' && <AboutPage />}
+        {view === 'faq' && <FaqPage />}
+        {view === 'contact' && <ContactPage />}
+        {(view === 'forgotPassword' || view === 'resetPassword') && (
+          <PasswordRecoveryPage
+            token={new URLSearchParams(window.location.search).get('resetToken') ?? ''}
+            onBackToLogin={() => setView('auth')}
+          />
+        )}
+        {view === 'paymentResult' && (
+          <PaymentReturnPage
+            orderId={new URLSearchParams(window.location.search).get('orderId') ?? ''}
+            cancelled={new URLSearchParams(window.location.search).get('payment') === 'cancelled'}
+            requestWithAuth={requestWithAuth}
+            onRetry={handlePaymentRetry}
+            onHome={() => setView('home')}
+          />
+        )}
         {view === 'auth' && renderAuth()}
         {view === 'account' && renderAccount()}
+        {view === 'orders' && user && <OrdersPage requestWithAuth={requestWithAuth} />}
+        {view === 'admin' && user?.role === 'admin' && <AdminPage requestWithAuth={requestWithAuth} />}
         {view === 'cart' && renderCart()}
         {view === 'checkout' && renderCheckout()}
       </main>
@@ -1072,10 +1632,10 @@ function App() {
           </div>
 
           <div className="footer-links">
-            <a href="#">Shop</a>
-            <a href="#">Ingredients</a>
-            <a href="#">Journal</a>
-            <a href="#">Support</a>
+            <button type="button" className="text-button" onClick={() => setView('shop')}>Shop</button>
+            <button type="button" className="text-button" onClick={() => setView('ingredients')}>Ingredients</button>
+            <button type="button" className="text-button" onClick={() => setView('journal')}>Journal</button>
+            <button type="button" className="text-button" onClick={() => setView('contact')}>Support</button>
           </div>
         </div>
       </footer>
